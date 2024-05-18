@@ -63,16 +63,12 @@ aws cloudformation create-stack --stack-name Demo-SG-Stack --template-body file:
 ```
 
 ## 4. VPC Endpointの作成とプライベートサブネットのルートテーブル更新
-* TODO: まだAP側が使ってないため不要
-
 * API GatewayのPrivate APIのためのVPC Endpointや、VPC内LambdaからDynamoDB、SQS、AppConfig等へアクセスするためのVPC Endpointを作成
 ```sh
 aws cloudformation validate-template --template-body file://cfn-vpe.yaml
 aws cloudformation create-stack --stack-name Demo-VPE-Stack --template-body file://cfn-vpe.yaml
 ```
 ## 5. NAT Gatewayの作成とプライベートサブネットのルートテーブル更新
-* TODO: まだAP側が使ってないため不要
-
 * VPC内Lambdaからインターネットに接続する場合に必要となる。
 * hello-worldのサンプルAPでは[https://checkip.amazonaws.com](https://checkip.amazonaws.com)へアクセスしに行くためのみに必要なので、もしhello-worldのサンプルAPの確認が不要な場合は、作成不要。
 
@@ -90,7 +86,6 @@ aws cloudformation create-stack --stack-name Demo-RDS-Stack --template-body file
 ```
 
 ## 7. EC2(Bastion)の作成
-* TODO: まだAP側が使ってないため不要
 * psqlによるRDBのテーブル作成や、APIGatewayのPrivate APIにアクセスするための踏み台を作成
 ```sh
 aws cloudformation validate-template --template-body file://cfn-bastion-ec2.yaml

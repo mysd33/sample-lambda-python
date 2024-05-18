@@ -20,6 +20,7 @@ resolve_s3 = true
 s3_prefix = "todo-python-app"
 region = "ap-northeast-1"
 image_repositories = []
+parameter_overrides = "StackPrefix=\"Demo\" TracingValue=\"Active\" Stage=\"Prod\" MemorySize=\"128\" HelloWorldFunctionName=\"hello-world\" BffFunctionName=\"bff-function\""
 
 [default.package.parameters]
 resolve_s3 = true

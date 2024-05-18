@@ -1,0 +1,103 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: VPCEndpoint Template for CloudFormation Demo. Depends on cfn-vpc.yaml, cfn-sg.yaml.
+#Metadata: 
+
+Parameters: 
+  StackPrefix:
+    Description: Stack Resource Name Prefix
+    Type: String
+    Default: Demo 
+  
+#Mappings: 
+
+#Conditions: 
+
+Resources:
+# DynamoDB VPC Endoint 
+  DynamoDBEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcEndpointType: Gateway
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.dynamodb
+      VpcId: 
+        Fn::ImportValue: !Sub ${StackPrefix}-VPC-ID
+      RouteTableIds:
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateRouteTableId
+
+# S3 VPC Endpoint
+  S3VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:      
+      VpcEndpointType: Gateway
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
+      VpcId: 
+        Fn::ImportValue: !Sub ${StackPrefix}-VPC-ID
+      RouteTableIds:
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateRouteTableId        
+
+# SQS VPC Endpoint
+  SQSVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:      
+      VpcEndpointType: Interface
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.sqs
+      SubnetIds:
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateSubnetOneId
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateSubnetTwoId
+      VpcId: 
+        Fn::ImportValue: !Sub ${StackPrefix}-VPC-ID          
+      SecurityGroupIds: 
+        - Fn::ImportValue: !Sub ${StackPrefix}-VPCEndpointSecurityGroup-ID                      
+      PrivateDnsEnabled: true
+
+# AppConfig VPC Endpoint
+  AppConfigDataVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:      
+      VpcEndpointType: Interface
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.appconfigdata
+      SubnetIds:
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateSubnetOneId
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateSubnetTwoId
+      VpcId: 
+        Fn::ImportValue: !Sub ${StackPrefix}-VPC-ID          
+      SecurityGroupIds: 
+        - Fn::ImportValue: !Sub ${StackPrefix}-VPCEndpointSecurityGroup-ID                      
+      PrivateDnsEnabled: true
+
+# VPC Endpont for Lambda Insights(CloudWatch Logs)
+  CloudWatchLogsLambdaInsightsVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:      
+      VpcEndpointType: Interface
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.logs
+      SubnetIds:
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateSubnetOneId
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateSubnetTwoId
+      VpcId: 
+        Fn::ImportValue: !Sub ${StackPrefix}-VPC-ID          
+      SecurityGroupIds: 
+        - Fn::ImportValue: !Sub ${StackPrefix}-VPCEndpointSecurityGroup-ID
+      PrivateDnsEnabled: true 
+
+# VPC Endpoint for API Gateway
+  PrivateAPIVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:      
+      VpcEndpointType: Interface
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.execute-api
+      SubnetIds:
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateSubnetOneId
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateSubnetTwoId
+      VpcId: 
+        Fn::ImportValue: !Sub ${StackPrefix}-VPC-ID          
+      SecurityGroupIds: 
+        - Fn::ImportValue: !Sub ${StackPrefix}-PrivateAPISecurityGroup-ID
+      PrivateDnsEnabled: true        
+        
+Outputs:
+  PrivateAPIVPCEndpointID:
+    Description: Private API VPC Endpoint ID
+    Value: !Ref PrivateAPIVPCEndpoint
+    Export: 
+      Name: !Sub ${StackPrefix}-PrivateAPIVPCEndpoint-ID  

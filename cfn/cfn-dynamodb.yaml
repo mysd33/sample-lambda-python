@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: DynamoDB Template for CloudFormation Demo.
+#Metadata: 
+
+Parameters: 
+#  UsersTableName:
+#    Type: String
+#    Default: users    
+  TodoTableName:
+    Type: String
+    Default: todo
+  TempTableName:
+    Type: String
+    Default: temp
+  QueueMessageTableName:
+    Type: String
+    Default: queue_message
+
+#Mappings: 
+
+#Conditions: 
+
+Resources: 
+# DynamoDB
+# User table on DynamoDB is not used now
+#  UsersTable:
+#    Type: AWS::DynamoDB::Table
+#    Properties:
+#      TableName: !Ref UsersTableName
+#      KeySchema:
+#        - AttributeName: user_id
+#          KeyType:  HASH
+#      AttributeDefinitions:
+#        - AttributeName: user_id
+#          AttributeType: S
+#      BillingMode: PAY_PER_REQUEST   
+  TodoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref TodoTableName
+      KeySchema:
+        - AttributeName: todo_id
+          KeyType:  HASH
+      AttributeDefinitions:
+        - AttributeName: todo_id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+  TempTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref TempTableName
+      KeySchema:
+        - AttributeName: id
+          KeyType:  HASH
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+  QueueMessageTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref QueueMessageTableName
+      KeySchema:
+        - AttributeName: message_id
+          KeyType:  HASH
+      AttributeDefinitions:
+        - AttributeName: message_id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      TimeToLiveSpecification:
+        AttributeName: delete_time
+        Enabled: true
+
+
+#Outputs:

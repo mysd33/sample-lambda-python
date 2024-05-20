@@ -33,7 +33,16 @@ Parameters:
     Default: bff-function
 
 
-#Mappings:
+Mappings:
+  PowertoolsLayerMap:
+    #Tokyo
+    ap-northeast-1:
+      x86: arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2:71
+      arm: arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2-Arm64:71
+    #Osaka
+    ap-northeast-3:
+      x86: arn:aws:lambda:ap-northeast-3:017000801446:layer:AWSLambdaPowertoolsPythonV2:71
+      arm: arn:aws:lambda:ap-northeast-3:017000801446:layer:AWSLambdaPowertoolsPythonV2-Arm64:71
 #  AppConfigExtentionsLayerMap:
 #    #Tokyo
 #    ap-northeast-1:
@@ -75,6 +84,14 @@ Globals:
         - Fn::ImportValue: !Sub ${StackPrefix}-PrivateSubnetTwoId    
     Environment:
       Variables:   
+        # Timezone
+        TZ: Asia/Tokyo      
+        #Power Tools Environment Variables
+        #TODO: Parameterize
+        POWERTOOLS_LOG_LEVEL: INFO
+        #POWERTOOLS_DEV: true
+        #POWERTOOLS_LOGGER_LOG_EVENT: true
+
         #TODO: Add Environment Variables 
         HOGE: Hoge
     # Deployment Configurtion
@@ -82,10 +99,10 @@ Globals:
     DeploymentPreference:
       #Type: Linear10PercentEvery1Minute
       Type: AllAtOnce
-    #LoggingConfig:
-    #  LogFormat: JSON
     
-    #Layers:
+    Layers:
+    # Powertools Lambda Layer
+    - !FindInMap [PowertoolsLayerMap, !Ref AWS::Region , x86]
     # AppConfig Extensions Lambda Layer    
     #  - !FindInMap [AppConfigExtentionsLayerMap, !Ref AWS::Region , x86]
     # Lambda Insights Extensions Lambda Layer    
@@ -107,8 +124,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Ref BffFunctionName
-      #TODO: Create Function
-      CodeUri: app/hello_world/
+      CodeUri: app/bff/
       Handler: app.lambda_handler
       Role: !ImportValue
         Fn::Sub: ${StackPrefix}-LambdaRoleArn
@@ -116,10 +132,12 @@ Resources:
         Event:
           Type: Api
           Properties:
-            #TODO: API Path
-            Path: /bff-api
-            Method: get
+            Path: /bff-api/{proxy+}
+            Method: ANY
             RestApiId: !Ref BffApi
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: !Ref BffFunctionName
 
 # Hello World Function
   HelloWorldFunction:

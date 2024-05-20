@@ -2,6 +2,7 @@ import json
 
 import requests
 
+from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.logging import Logger
 from aws_lambda_powertools.logging import correlation_paths
@@ -37,6 +38,6 @@ def create_todo_async():
 
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
 @tracer.capture_lambda_handler
-def lambda_handler(event, context):
+def lambda_handler(event, context: LambdaContext):
     return app.resolve(event, context)    
 

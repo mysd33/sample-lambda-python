@@ -164,16 +164,28 @@ aws cloudformation validate-template --template-body file://cfn-appconfig.yaml
 aws cloudformation create-stack --stack-name Demo-AppConfig-Stack --template-body file://cfn-appconfig.yaml
 ```
 
-## 13. AWS SAMでLambda/API Gatewayのデプロイ       
-* SAMビルド    
+## 13. AWS SAMでLambda/API Gatewayのデプロイ   
+* ソフトウェアフレームワークのビルド
+    * 通常のプロジェクトと違い、簡単のため、ソフトウェアフレームワークを同じリポジトリ内の別ディレクトリに配置しているため、requirements.txtに記載するパッケージの探索パスが通るようにするため、パッケージをインストールする。
+    * また、相対パスでrequirements.txtに記載できるよう、whlファイル（配布物アーカイブ）を作成する。
+
 ```sh
 # トップのフォルダに戻る
 cd ..
 
+# パッケージをインストールすることで、VS Codeで開発するとき探索パスが通るようにする
+pip install .\appbase
+# 相対パスでrequirements.txtに記載できるよう、whlファイル（配布物アーカイブ）を作成
+cd appbase & py -m pip install --upgrade build & py -m build
+```
+
+* SAMビルド    
+```sh
 # ビルド
-sam build --use-container
+cd .. & sam build
 
 # Windowsでもmakeをインストールすればmakeだけでいけます
+# makeの場合は、ソフトウェアフレームワークのビルドも含んでいるので、通常はmakeコマンドのみでビルドできる
 make
 ```
 
@@ -181,12 +193,19 @@ make
 ```sh
 # .aws-sam配下のビルド資材を削除
 rmdir /s /q .aws-sam
+
+# ソフトウェアフレームワークのビルド
+pip install .\appbase
+cd appbase & py -m pip install --upgrade build & py -m build
+
 # ビルド
-sam build --use-container
+cd .. & sam build
 
 # Windowsでもmakeをインストールすればmakeだけでいけます
+# makeの場合は、ソフトウェアフレームワークのビルドも含んでいるので、通常はmakeコマンドのみでビルドできる
 make
 ```
+
 
 * SAMデプロイ
 ```sh

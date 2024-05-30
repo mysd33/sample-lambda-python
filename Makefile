@@ -37,11 +37,14 @@ vet:
 validate:
 	sam validate
 
-build: clean
-# for windows	
-	sam build --use-container
-# for linux
-# TODO	
+build_appbase:
+# install appbase project to use vscode code assist
+	pip install .\appbase
+# create appbase project whl file
+	cd appbase & py -m pip install --upgrade build & py -m build
+
+build: clean build_appbase
+	sam build
 
 unit_test:
 # TODO

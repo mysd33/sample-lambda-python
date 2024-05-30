@@ -8,6 +8,8 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from domain.service import BffService
 from infra.repository_impl import TodoRepositoryStub, UserRepositoryStub
 
+from appbase.dummy.dummy import dummy
+
 app = APIGatewayRestResolver()
 logger = Logger(log_uncaught_exceptions=True)
 tracer = Tracer()
@@ -32,6 +34,9 @@ def get_todo():
 @app.post("/bff-api/v1/users")
 @tracer.capture_method
 def create_user():
+    # パッケージの実験のための呼び出し
+    dummy()
+
     request_data: dict = app.current_event.json_body
     # サービスの実行
     result = service.register_user(user_name=request_data["user_name"])

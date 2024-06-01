@@ -1,1 +1,5 @@
-{}
+{
+    "Parameters": {
+        "POWERTOOLS_LOG_LEVEL": "DEBUG"
+    }
+}

@@ -31,7 +31,16 @@ Parameters:
   BffFunctionName:
     Type: String
     Default: bff-function
-
+  TodoFunctionName:
+    Type: String
+    Default: todo-function    
+  LogLevel:
+    Type: String
+#    Default: INFO
+    Default: DEBUG
+  LogRetensionInDays:
+    Type: Number
+    Default: 7
 
 Mappings:
   PowertoolsLayerMap:
@@ -86,9 +95,8 @@ Globals:
       Variables:   
         # Timezone
         TZ: Asia/Tokyo      
-        #Power Tools Environment Variables
-        #TODO: Parameterize
-        POWERTOOLS_LOG_LEVEL: INFO
+        # Power Tools Environment Variables        
+        POWERTOOLS_LOG_LEVEL: !Ref LogLevel
         #POWERTOOLS_DEV: true
         #POWERTOOLS_LOGGER_LOG_EVENT: true
 
@@ -149,12 +157,29 @@ Resources:
       Role: !ImportValue
         Fn::Sub: ${StackPrefix}-LambdaRoleArn         
       Events:
-        HelloWorld:
+        Event:
           Type: Api 
           Properties:
             Path: /hello
             Method: get
             RestApiId: !Ref HelloApi
+
+# Todo Function(API Triggered)
+  TodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: todo-function
+      CodeUri: app/todo/
+      Handler: app.lambda_handler
+      Role: !ImportValue
+        Fn::Sub: ${StackPrefix}-LambdaRoleArn
+      Events:
+        Event:
+          Type: Api
+          Properties:
+            Path: /todo-api/{proxy+}
+            Method: ANY
+            RestApiId: !Ref TodoApi
 
 # API Gateway Private REST API
 # Bff API(Regional Public API)
@@ -182,11 +207,36 @@ Resources:
             - Effect: Allow
               Principal: '*'
               Action: execute-api:Invoke
-              Resource: !Sub execute-api:/${Stage}/GET/hello
+              Resource: !Sub execute-api:/${Stage}/GET/hello              
               Condition:
                 StringEquals:
                   aws:SourceVpce: !ImportValue
-                    Fn::Sub: ${StackPrefix}-PrivateAPIVPCEndpoint-ID       
+                    Fn::Sub: ${StackPrefix}-PrivateAPIVPCEndpoint-ID
+
+# Todo API(Private API)
+  TodoApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: todo-api
+      StageName: !Ref Stage 
+      EndpointConfiguration:
+        Type: PRIVATE
+        VPCEndpointIds:
+          - Fn::ImportValue: !Sub ${StackPrefix}-PrivateAPIVPCEndpoint-ID
+      Auth:
+        ResourcePolicy:
+          CustomStatements:
+            - Effect: Allow
+              Principal: '*'
+              Action: execute-api:Invoke
+              Resource:
+                - !Sub execute-api:/${Stage}/POST/todo-api/*
+                - !Sub execute-api:/${Stage}/GET/todo-api/*
+              Condition:
+                StringEquals:
+                  aws:SourceVpce: !ImportValue
+                    Fn::Sub: ${StackPrefix}-PrivateAPIVPCEndpoint-ID
+
 # IAM Role for API Gateway Account
   APIGatewayRole:
     Type: AWS::IAM::Role
@@ -216,12 +266,17 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/lambda/${HelloWorldFunctionName}
-      RetentionInDays: 7
+      RetentionInDays: !Ref LogRetensionInDays
+  TodoFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${TodoFunctionName}
+      RetentionInDays: !Ref LogRetensionInDays
   BffFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/lambda/${BffFunctionName}
-      RetentionInDays: 7
+      RetentionInDays: !Ref LogRetensionInDays
 
 # Application Insights
   ApplicationResourceGroup:
@@ -238,6 +293,12 @@ Resources:
         Ref: ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
 Outputs:
+  HelloWorldAPI:
+    Description: API Gateway endpoint URL for HelloWorld
+    Value: !Sub https://${HelloApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/hello
+  HelloWorldFunction:
+    Description: First Lambda Function ARN
+    Value: !GetAtt HelloWorldFunction.Arn
   BffAPI:
     Description: API Gateway endpoint URL for Bff
     Value: !Sub https://${BffApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/bff-api
@@ -247,9 +308,12 @@ Outputs:
   BffFunctionDeploymentGroup:
     Description: Bff Lambda Function DeploymentGroup ARN
     Value: !Ref BffFunctionDeploymentGroup
-  HelloWorldAPI:
-    Description: API Gateway endpoint URL for HelloWorld
-    Value: !Sub https://${HelloApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/hello
-  HelloWorldFunction:
-    Description: First Lambda Function ARN
-    Value: !GetAtt HelloWorldFunction.Arn
+  TodoAPI:
+    Description: API Gateway endpoint URL for Todo
+    Value: !Sub https://${TodoApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/todo-api/v1/todo
+  TodoFunction:
+    Description: Todo Lambda Function ARN
+    Value: !GetAtt TodoFunction.Arn
+  TodoFunctionDeploymentGroup:
+    Description: Todo Lambda Function DeploymentGroup ARN
+    Value: !Ref TodoFunctionDeploymentGroup    

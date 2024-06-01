@@ -1,7 +1,9 @@
 import json
 from logging import Logger as StdLogger
 
-from aws_lambda_powertools.logging import correlation_paths
+from aws_lambda_powertools.event_handler.api_gateway import APIGatewayRestResolver
+from aws_lambda_powertools.logging import Logger, correlation_paths
+from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from domain.service import BffService
 from infra.repository_impl import TodoRepositoryStub, UserRepositoryStub
@@ -9,9 +11,9 @@ from infra.repository_impl import TodoRepositoryStub, UserRepositoryStub
 from appbase.component import application_context
 
 try:
-    app = application_context.get_api_gateway_rest_resolver()
-    logger = application_context.get_logger()
-    tracer = application_context.get_tracer()
+    app: APIGatewayRestResolver = application_context.get_api_gateway_rest_resolver()
+    logger: Logger = application_context.get_logger()
+    tracer: Tracer = application_context.get_tracer()
 
     todo_repository = TodoRepositoryStub()
     user_repository = UserRepositoryStub()
@@ -31,7 +33,7 @@ except Exception as e:
 def get_todo():
     user_id: str = app.current_event.get_query_string_value(name="user_id")
     todo_id: str = app.current_event.get_query_string_value(name="todo_id")
-    logger.info(f"user_id={user_id}, todo_id={todo_id}")
+    logger.debug(f"user_id={user_id}, todo_id={todo_id}")
     # サービスの実行
     result = service.find_todo(todo_id=todo_id, user_id=user_id)
     # 処理結果を返却

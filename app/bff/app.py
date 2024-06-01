@@ -1,22 +1,29 @@
 import json
+from logging import Logger as StdLogger
 
-import requests
-from aws_lambda_powertools import Tracer
-from aws_lambda_powertools.event_handler import APIGatewayRestResolver
-from aws_lambda_powertools.logging import Logger, correlation_paths
+from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from domain.service import BffService
 from infra.repository_impl import TodoRepositoryStub, UserRepositoryStub
 
-from appbase.dummy.dummy import dummy
+from appbase.component import application_context
 
-app = APIGatewayRestResolver()
-logger = Logger(log_uncaught_exceptions=True)
-tracer = Tracer()
+try:
+    app = application_context.get_api_gateway_rest_resolver()
+    logger = application_context.get_logger()
+    tracer = application_context.get_tracer()
 
-todo_repository = TodoRepositoryStub()
-user_repository = UserRepositoryStub()
-service = BffService(todo_repository=todo_repository, user_repository=user_repository)
+    todo_repository = TodoRepositoryStub()
+    user_repository = UserRepositoryStub()
+    service = BffService(
+        todo_repository=todo_repository, user_repository=user_repository
+    )
+except Exception as e:
+    # TODO: 初期化時の正しい例外処理の検討
+    if logger:
+        logger.exception("初期化エラー: %s", e)
+    else:
+        StdLogger().exception("初期化エラー: %s", e)
 
 
 @app.get("/bff-api/v1/todo")
@@ -34,9 +41,6 @@ def get_todo():
 @app.post("/bff-api/v1/users")
 @tracer.capture_method
 def create_user():
-    # パッケージの実験のための呼び出し
-    dummy()
-
     request_data: dict = app.current_event.json_body
     # サービスの実行
     result = service.register_user(user_name=request_data["user_name"])

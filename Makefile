@@ -1,5 +1,6 @@
 .PHONY: clean
 .PHONY: validate
+.PHONY: build_appbase
 .PHONY: build
 .PHONY: unit_test
 .PHONY: integration_test

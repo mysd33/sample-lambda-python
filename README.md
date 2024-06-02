@@ -685,7 +685,7 @@ curl -X PUT http://127.0.0.1:3000/bff-api/v1/users
 | ---- | ---- | ---- | ---- |
 | オンラインAP実行制御 | APIの要求受信、ビジネスロジック実行、応答返却まで一連の定型的な処理を実行を制御する共通機能を提供する。Powertools for AWS LambdaのEvent Handler機能で実現する | - | - |
 | ロギング | Powertools for AWS LambdaのLogger機能を利用し、動作環境に応じたログレベル等を切替可能とする。また、メッセージ管理機能と連携し、メッセージIDをもとにログ出力可能な汎用的なAPIを提供する（これについては、今後実装を検討）。 | ○ | 未定 |
-| 分散トレーシング（X-Ray） | AWS X-Rayを利用して、サービス間の分散トレーシング・可視化を実現する。実現には、AWS SAMのtemplate.ymlで設定でAPI GatewayやLambdaのトレースを有効化するとともに、Powertools for AWS LambdaのTracer機能を利用する。 | - | - |
+| 分散トレーシング（X-Ray） | AWS X-Rayを利用して、サービス間の分散トレーシング・可視化を実現する。実現には、AWS SAMのtemplate.ymlで設定でAPI GatewayやLambdaのトレースを有効化するとともに、Powertools for AWS LambdaのTracer機能を利用し、X-Ray SDKがサポートするライブラリに自動でパッチする。 | - | - |
 
 * 以下は、今後追加を検討中。
 

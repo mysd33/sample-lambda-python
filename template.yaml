@@ -146,6 +146,7 @@ Resources:
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: !Ref BffFunctionName
+          TODO_API_BASE_URL: https://${TodoApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}
 
 # Hello World Function
   HelloWorldFunction:
@@ -180,6 +181,9 @@ Resources:
             Path: /todo-api/{proxy+}
             Method: ANY
             RestApiId: !Ref TodoApi
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: !Ref TodoFunctionName            
 
 # API Gateway Private REST API
 # Bff API(Regional Public API)

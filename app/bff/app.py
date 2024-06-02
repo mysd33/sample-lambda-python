@@ -6,7 +6,7 @@ from aws_lambda_powertools.logging import Logger, correlation_paths
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from domain.service import BffService
-from infra.repository_impl import TodoRepositoryStub, UserRepositoryStub
+from infra.repository_impl import TodoRepositoryImpl, UserRepositoryStub
 
 from appbase.component import application_context
 
@@ -15,7 +15,8 @@ try:
     logger: Logger = application_context.get_logger()
     tracer: Tracer = application_context.get_tracer()
 
-    todo_repository = TodoRepositoryStub()
+    # todo_repository = TodoRepositoryStub()
+    todo_repository = TodoRepositoryImpl(logger=logger)
     user_repository = UserRepositoryStub()
     service = BffService(
         todo_repository=todo_repository, user_repository=user_repository

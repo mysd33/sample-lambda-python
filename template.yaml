@@ -82,7 +82,7 @@ Globals:
     Runtime: python3.12
     Architectures:
     - x86_64
-    Timeout: 5
+    Timeout: 15
     MemorySize: !Ref MemorySize
     Tracing: !Ref TracingValue
     VpcConfig:

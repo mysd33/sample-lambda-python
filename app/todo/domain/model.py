@@ -1,19 +1,24 @@
 """ドメインオブジェクトを定義するモジュールです。"""
 
-import dataclasses
+from dataclasses import dataclass, field
+
+from dataclasses_json import config, dataclass_json
 
 
-@dataclasses.dataclass
+@dataclass_json
+@dataclass
 class Todo:
     """Todoのエンティティクラスです。"""
 
-    id: str
-    title: str
+    # https://lidatong.github.io/dataclasses-json/#encode-or-decode-using-a-different-name
+    id: str = field(metadata=config(field_name="todo_id"))
+    title: str = field(metadata=config(field_name="todo_title"))
 
 
-@dataclasses.dataclass
+@dataclass_json
+@dataclass
 class User:
     """Userのエンティティクラスです。"""
 
-    id: str
-    name: str
+    id: str = field(metadata=config(field_name="user_id"))
+    name: str = field(metadata=config(field_name="user_name"))

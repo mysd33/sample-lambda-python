@@ -36,8 +36,8 @@ class TodoRepositoryImpl(TodoRepository):
 
         self.logger.debug("response_json: %s", data)
         return Todo(
-            id=data["id"],
-            title=data["title"],
+            id=data["todo_id"],
+            title=data["todo_title"],
         )
 
     def create_one(self, todo_title: str) -> Todo:
@@ -58,8 +58,8 @@ class TodoRepositoryImpl(TodoRepository):
 
         self.logger.debug("response_json: %s", data)
         return Todo(
-            id=data["id"],
-            title=data["title"],
+            id=data["todo_id"],
+            title=data["todo_title"],
         )
 
 

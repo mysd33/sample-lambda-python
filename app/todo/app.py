@@ -1,4 +1,4 @@
-import json
+import uuid
 from logging import Logger as StdLogger
 
 from aws_lambda_powertools.event_handler.api_gateway import APIGatewayRestResolver
@@ -30,23 +30,25 @@ def find_todo_by_id(todo_id: str):
     # TODO: dummy response
     todo = Todo(
         id=todo_id,
-        title="Buy Milk",
+        # title="Buy Milk",
+        title="牛乳を買う",
     )
-    return todo.to_json()
+    return todo.to_json(ensure_ascii=False)
 
 
 @app.post("/todo-api/v1/todo")
 @tracer.capture_method
 def register_todo():
     """Todo登録API"""
-    logger.debug("register todo")
-
+    request_data: dict = app.current_event.json_body
+    logger.debug("register todo todo_title: %s", request_data["todo_title"])
     # TODO: dummy response
     todo = Todo(
-        id="daac7b7b-1fef-11ef-b357-0242ac110003",
-        title="Buy Milk",
+        # id="daac7b7b-1fef-11ef-b357-0242ac110003",
+        id=str(uuid.uuid4()),
+        title=request_data["todo_title"],
     )
-    return todo.to_json(), 201
+    return todo.to_json(ensure_ascii=False), 201
 
 
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)

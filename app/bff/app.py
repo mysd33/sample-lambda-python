@@ -52,7 +52,7 @@ def find_todo():
     result: tuple = service.find_todo(todo_id=todo_id, user_id=user_id)
     response = FindTodoResponse(user=result[0], todo=result[1])
     # 処理結果を返却
-    return response.to_json()
+    return response.to_json(ensure_ascii=False)
 
 
 @app.post("/bff-api/v1/users")
@@ -63,7 +63,7 @@ def register_user():
     # サービスの実行
     user: User = service.register_user(user_name=request_data["user_name"])
     # 処理結果を返却
-    return user.to_json(), 201
+    return user.to_json(ensure_ascii=False), 201
 
 
 @app.post("/bff-api/v1/todo")
@@ -72,7 +72,7 @@ def register_todo():
     """Todo登録API"""
     request_data: dict = app.current_event.json_body
     todo: Todo = service.register_todo(todo_title=request_data["todo_title"])
-    return todo.to_json(), 201
+    return todo.to_json(ensure_ascii=False), 201
 
 
 @app.post("/bff-api/v1/todo-async")

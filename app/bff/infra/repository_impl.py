@@ -29,16 +29,13 @@ class TodoRepositoryImpl(TodoRepository):
         try:
             response = requests.get(todo_api_url)
             response.raise_for_status()
-            data = response.json()
+            data = response.text
         except Exception as e:
             self.logger.exception("リクエストエラー: %s", e)
             raise e
 
         self.logger.debug("response_json: %s", data)
-        return Todo(
-            id=data["todo_id"],
-            title=data["todo_title"],
-        )
+        return Todo.from_json(data)
 
     def create_one(self, todo_title: str) -> Todo:
         """Todoを登録します。"""
@@ -50,17 +47,15 @@ class TodoRepositoryImpl(TodoRepository):
                 todo_api_url,
                 json={"todo_title": todo_title},
             )
-            data = response.json()
+            response.raise_for_status()
+            data = response.text
         except Exception as e:
             # TODO: 例外処理の検討
             self.logger.exception("リクエストエラー: %s", e)
             raise e
 
         self.logger.debug("response_json: %s", data)
-        return Todo(
-            id=data["todo_id"],
-            title=data["todo_title"],
-        )
+        return Todo.from_json(data)
 
 
 class TodoRepositoryStub(TodoRepository):

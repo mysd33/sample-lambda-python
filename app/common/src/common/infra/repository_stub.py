@@ -1,3 +1,5 @@
+import uuid
+
 from common.domain.model import Todo, User
 from common.domain.repository import TodoRepository, UserRepository
 

@@ -9,7 +9,7 @@ class TodoRepository:
     def __init__(self) -> None:
         pass
 
-    def find_one(self, todo_id: str) -> tuple:
+    def find_one(self, todo_id: str) -> Todo:
         """todo_idが一致するTodoを取得します。"""
         raise NotImplementedError
 

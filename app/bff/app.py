@@ -10,7 +10,7 @@ from common.infra.repository_impl import (
     TodoRepositoryImplForRestAPI,
     UserRepositoryImplForRestAPI,
 )
-from dataclasses_json import config, dataclass_json
+from dataclasses_json import DataClassJsonMixin, config
 from domain.service import BffService
 
 from appbase.component import application_context
@@ -35,9 +35,9 @@ except Exception as e:
         StdLogger().exception("初期化エラー: %s", e)
 
 
-@dataclass_json
+# @dataclass_json
 @dataclass
-class FindTodoResponse:
+class FindTodoResponse(DataClassJsonMixin):
     """Todo取得APIのレスポンス"""
 
     todo: Todo = field(metadata=config(field_name="Todo"))

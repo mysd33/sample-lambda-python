@@ -2,12 +2,11 @@
 
 from dataclasses import dataclass, field
 
-from dataclasses_json import config, dataclass_json
+from dataclasses_json import DataClassJsonMixin, config
 
 
-@dataclass_json
 @dataclass
-class Todo:
+class Todo(DataClassJsonMixin):
     """Todoのエンティティクラスです。"""
 
     # https://lidatong.github.io/dataclasses-json/#encode-or-decode-using-a-different-name
@@ -15,9 +14,8 @@ class Todo:
     title: str = field(metadata=config(field_name="todo_title"))
 
 
-@dataclass_json
 @dataclass
-class User:
+class User(DataClassJsonMixin):
     """Userのエンティティクラスです。"""
 
     id: str = field(metadata=config(field_name="user_id"))

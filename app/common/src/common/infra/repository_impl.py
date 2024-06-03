@@ -11,8 +11,8 @@ from common.domain.model import Todo, User
 from common.domain.repository import TodoRepository, UserRepository
 
 
-class TodoRepositoryImpl(TodoRepository):
-    """Todoのリポジトリの実装クラスです。"""
+class TodoRepositoryImplForRestAPI(TodoRepository):
+    """TodoのリポジトリのREST APIによる実装クラスです。"""
 
     def __init__(self, logger: Logger) -> None:
         self.logger = logger
@@ -31,6 +31,7 @@ class TodoRepositoryImpl(TodoRepository):
             response.raise_for_status()
             data = response.text
         except Exception as e:
+            # TODO: 例外処理の検討
             self.logger.exception("リクエストエラー: %s", e)
             raise e
 
@@ -77,6 +78,50 @@ class TodoRepositoryStub(TodoRepository):
             id=str(uuid.uuid4()),
             title=todo_title,
         )
+
+
+class UserRepositoryImplForRestAPI(UserRepository):
+    """UserのリポジトリのREST APIによる実装クラスです。"""
+
+    def __init__(self, logger: Logger) -> None:
+        self.logger = logger
+
+    def find_one(self, user_id: str) -> User:
+        """todo_idが一致するTodoを取得します。"""
+        user_api_url = f"{self.todo_api_base_url}/user-api/v1/users/{user_id}"
+        self.logger.debug("user_api_url: %s", user_api_url)
+        # API呼び出し
+        try:
+            response = requests.get(user_api_url)
+            response.raise_for_status()
+            data = response.text
+        except Exception as e:
+            # TODO: 例外処理の検討
+            self.logger.exception("リクエストエラー: %s", e)
+            raise e
+
+        self.logger.debug("response_json: %s", data)
+        return User.from_json(data)
+
+    def create_one(self, user_name: str) -> User:
+        """ユーザを登録します。"""
+        user_api_url = f"{self.todo_api_base_url}/user-api/v1/users"
+        self.logger.debug("user_api_url: %s", user_api_url)
+        # API呼び出し
+        try:
+            response = requests.post(
+                user_api_url,
+                json={"user_name": user_name},
+            )
+            response.raise_for_status()
+            data = response.text
+        except Exception as e:
+            # TODO: 例外処理の検討
+            self.logger.exception("リクエストエラー: %s", e)
+            raise e
+
+        self.logger.debug("response_json: %s", data)
+        return User.from_json(data)
 
 
 class UserRepositoryStub(UserRepository):

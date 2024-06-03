@@ -31,6 +31,9 @@ Parameters:
   BffFunctionName:
     Type: String
     Default: bff-function
+  UsersFunctionName:
+    Type: String
+    Default: user-function    
   TodoFunctionName:
     Type: String
     Default: todo-function    
@@ -146,8 +149,8 @@ Resources:
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: !Ref BffFunctionName
-          TODO_API_BASE_URL: https://${TodoApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}
-
+          TODO_API_BASE_URL: !Sub https://${TodoApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}
+          USERS_API_BASE_URL: !Sub https://${UserApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}
 # Hello World Function
   HelloWorldFunction:
     Type: AWS::Serverless::Function 
@@ -165,11 +168,28 @@ Resources:
             Method: get
             RestApiId: !Ref HelloApi
 
+# User Function
+  UsersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Ref UsersFunctionName
+      CodeUri: app/users/
+      Handler: app.lambda_handler       
+      Role:
+        Fn::ImportValue: !Sub ${StackPrefix}-LambdaRoleArn      
+      Events:
+        Event:
+          Type: Api
+          Properties:
+            Path: /users-api/{proxy+}
+            Method: ANY
+            RestApiId: !Ref UserApi
+
 # Todo Function(API Triggered)
   TodoFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: todo-function
+      FunctionName: !Ref TodoFunctionName
       CodeUri: app/todo/
       Handler: app.lambda_handler
       Role: !ImportValue
@@ -216,7 +236,29 @@ Resources:
                 StringEquals:
                   aws:SourceVpce: !ImportValue
                     Fn::Sub: ${StackPrefix}-PrivateAPIVPCEndpoint-ID
-
+# User API(Private API) 
+  UserApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: user-api
+      StageName: !Ref Stage
+      EndpointConfiguration:
+        Type: PRIVATE
+        VPCEndpointIds:
+          - Fn::ImportValue: !Sub ${StackPrefix}-PrivateAPIVPCEndpoint-ID
+      Auth:
+        ResourcePolicy:
+          CustomStatements:
+            - Effect: Allow
+              Principal: '*'
+              Action: execute-api:Invoke
+              Resource:
+                - !Sub execute-api:/${Stage}/POST/users-api/*
+                - !Sub execute-api:/${Stage}/GET/users-api/*
+              Condition:
+                StringEquals:
+                  aws:SourceVpce: !ImportValue
+                    Fn::Sub: ${StackPrefix}-PrivateAPIVPCEndpoint-ID
 # Todo API(Private API)
   TodoApi:
     Type: AWS::Serverless::Api
@@ -264,13 +306,18 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/apigateway/accesslog/${AWS::StackName}
-      RetentionInDays: 7
+      RetentionInDays: !Ref LogRetensionInDays
 # Lambda Log group
   HelloWorldFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/lambda/${HelloWorldFunctionName}
       RetentionInDays: !Ref LogRetensionInDays
+  UsersFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${UsersFunctionName}
+      RetentionInDays: !Ref LogRetensionInDays      
   TodoFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -312,6 +359,15 @@ Outputs:
   BffFunctionDeploymentGroup:
     Description: Bff Lambda Function DeploymentGroup ARN
     Value: !Ref BffFunctionDeploymentGroup
+  UsersAPI:
+    Description: API Gateway endpoint URL for Users
+    Value: !Sub https://${UserApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/users-api/v1/users
+  UsersFunction:
+    Description: Users Lambda Function ARN
+    Value: !GetAtt UsersFunction.Arn
+  UsersFunctionDeploymentGroup:
+    Description: Users Lambda Function DeploymentGroup ARN
+    Value: !Ref UsersFunctionDeploymentGroup    
   TodoAPI:
     Description: API Gateway endpoint URL for Todo
     Value: !Sub https://${TodoApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/todo-api/v1/todo

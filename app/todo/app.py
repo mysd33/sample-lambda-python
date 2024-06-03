@@ -5,7 +5,7 @@ from aws_lambda_powertools.event_handler.api_gateway import APIGatewayRestResolv
 from aws_lambda_powertools.logging import Logger, correlation_paths
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from domain.model import Todo
+from common.domain.model import Todo
 
 from appbase.component import application_context
 

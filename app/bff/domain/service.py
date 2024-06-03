@@ -1,7 +1,7 @@
 """サービスクラスを定義するモジュールです。"""
 
-from .model import Todo, User
-from .repository import TodoRepository, UserRepository
+from common.domain.model import Todo, User
+from common.domain.repository import TodoRepository, UserRepository
 
 
 class BffService:

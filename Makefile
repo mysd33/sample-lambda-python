@@ -1,6 +1,8 @@
 .PHONY: clean
 .PHONY: validate
 .PHONY: build_appbase
+.PHONY: build_common
+.PHONY: build_app
 .PHONY: build
 .PHONY: unit_test
 .PHONY: integration_test
@@ -42,10 +44,21 @@ build_appbase:
 # install appbase project to use vscode code assist
 	pip install .\appbase
 # create appbase project whl file
-	cd appbase & py -m pip install --upgrade build & py -m build
+#	cd appbase & py -m pip install --upgrade build & py -m build
+	cd appbase & py -m build
 
-build: clean build_appbase
+build_common:
+# install common project to use vscode code assist
+	pip install .\app\common
+# create common project whl file
+#	cd app\common & py -m pip install --upgrade build & py -m build	
+	cd app\common & py -m build
+
+build_app: clean
 	sam build
+
+build: build_appbase build_common build_app
+	
 
 unit_test:
 # TODO

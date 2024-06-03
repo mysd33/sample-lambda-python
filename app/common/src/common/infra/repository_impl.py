@@ -7,8 +7,8 @@ import requests
 
 # TODO: loggerパッケージをappbaseのインフェースに変更
 from aws_lambda_powertools.logging import Logger
-from domain.model import Todo, User
-from domain.repository import TodoRepository, UserRepository
+from common.domain.model import Todo, User
+from common.domain.repository import TodoRepository, UserRepository
 
 
 class TodoRepositoryImpl(TodoRepository):

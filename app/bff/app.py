@@ -1,4 +1,3 @@
-import json
 from dataclasses import dataclass, field
 from logging import Logger as StdLogger
 
@@ -6,10 +5,10 @@ from aws_lambda_powertools.event_handler.api_gateway import APIGatewayRestResolv
 from aws_lambda_powertools.logging import Logger, correlation_paths
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
+from common.domain.model import Todo, User
+from common.infra.repository_impl import TodoRepositoryImpl, UserRepositoryStub
 from dataclasses_json import config, dataclass_json
-from domain.model import Todo, User
 from domain.service import BffService
-from infra.repository_impl import TodoRepositoryImpl, UserRepositoryStub
 
 from appbase.component import application_context
 

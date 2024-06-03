@@ -6,7 +6,10 @@ from aws_lambda_powertools.logging import Logger, correlation_paths
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from common.domain.model import Todo, User
-from common.infra.repository_impl import TodoRepositoryImpl, UserRepositoryStub
+from common.infra.repository_impl import (
+    TodoRepositoryImplForRestAPI,
+    UserRepositoryImplForRestAPI,
+)
 from dataclasses_json import config, dataclass_json
 from domain.service import BffService
 
@@ -18,8 +21,9 @@ try:
     tracer: Tracer = application_context.get_tracer()
 
     # todo_repository = TodoRepositoryStub()
-    todo_repository = TodoRepositoryImpl(logger=logger)
-    user_repository = UserRepositoryStub()
+    todo_repository = TodoRepositoryImplForRestAPI(logger=logger)
+    # user_repository = UserRepositoryStub()
+    user_repository = UserRepositoryImplForRestAPI(logger=logger)
     service = BffService(
         todo_repository=todo_repository, user_repository=user_repository
     )

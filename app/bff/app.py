@@ -1,3 +1,5 @@
+"""BFFアプリケーションのエントリポイントControllerを定義するモジュールです。"""
+
 from dataclasses import dataclass, field
 from logging import Logger as StdLogger
 
@@ -13,9 +15,10 @@ from common.infra.repository_restapi import (
 from dataclasses_json import DataClassJsonMixin, config
 from domain.service import BffService
 
-from appbase.component import application_context
+from appbase.component.application_context import ApplicationContext
 
 try:
+    application_context = ApplicationContext()
     app: APIGatewayRestResolver = application_context.get_api_gateway_rest_resolver()
     logger: Logger = application_context.get_logger()
     tracer: Tracer = application_context.get_tracer()

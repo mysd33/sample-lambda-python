@@ -1,3 +1,5 @@
+""" TodoアプリケーションのエントリーポイントControllerを定義するモジュールです。 """
+
 from logging import Logger as StdLogger
 
 from aws_lambda_powertools.event_handler.api_gateway import APIGatewayRestResolver
@@ -11,13 +13,15 @@ from common.infra.repository_dynamodb import (
 )
 from domain.service import TodoService
 
-from appbase.component import application_context
+from appbase.component.application_context import ApplicationContext
 
 try:
+    application_context = ApplicationContext()
     app: APIGatewayRestResolver = application_context.get_api_gateway_rest_resolver()
     logger: Logger = application_context.get_logger()
     tracer: Tracer = application_context.get_tracer()
-    todo_repository = TodoRepositoryImpl(logger=logger)
+    dynamodb_client = application_context.get_dynamodb_client()
+    todo_repository = TodoRepositoryImpl(logger=logger, dynamodb_client=dynamodb_client)
     service = TodoService(todo_repository=todo_repository)
 
 except Exception as e:

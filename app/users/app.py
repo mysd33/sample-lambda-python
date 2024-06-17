@@ -1,11 +1,11 @@
-import uuid
+"""UserアプリケーションのエントリポイントControllerを定義するモジュールです。"""
+
 from logging import Logger as StdLogger
 
 from aws_lambda_powertools.event_handler.api_gateway import APIGatewayRestResolver
 from aws_lambda_powertools.logging import Logger, correlation_paths
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from common.domain.model import User
 
 # from common.infra.repository_stub import UserRepositoryStub as UserRepositoryImpl
 from common.infra.repository_dynamodb import (
@@ -13,13 +13,15 @@ from common.infra.repository_dynamodb import (
 )
 from domain.service import UserService
 
-from appbase.component import application_context
+from appbase.component.application_context import ApplicationContext
 
 try:
+    application_context = ApplicationContext()
     app: APIGatewayRestResolver = application_context.get_api_gateway_rest_resolver()
     logger: Logger = application_context.get_logger()
     tracer: Tracer = application_context.get_tracer()
-    user_repository = UserRepositoryImpl(logger=logger)
+    dynamodb_client = application_context.get_dynamodb_client()
+    user_repository = UserRepositoryImpl(logger=logger, dynamodb_client=dynamodb_client)
     service = UserService(user_repository=user_repository)
 except Exception as e:
     # TODO: 初期化時の正しい例外処理の検討

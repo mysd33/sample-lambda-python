@@ -674,6 +674,8 @@ curl -X PUT http://127.0.0.1:3000/bff-api/v1/users
         aws sqs delete-message --queue-url http://localhost:9324/000000000000/SampleFIFOQueue.fifo --endpoint-url http://localhost:9324 --receipt-handle (ReceiptHandleの値)
         ```
 
+## sam localでの直接デバッグ実行
+* [AWSの開発者ガイド](https://docs.aws.amazon.com/ja_jp/toolkit-for-vscode/latest/userguide/debug-apigateway.html)の記載にある通り、AWS Toolkitの機能で、VSCodeでの sam localの直接デバッグ実行することも可能である。
 
 ## ソフトウェアフレームワーク
 > [!NOTE]

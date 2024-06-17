@@ -1,7 +1,6 @@
-"""リポジトリクラスを定義するモジュールです。"""
+"""リポジトリのREST APIによる実装クラスを定義するモジュールです。"""
 
 import os
-import uuid
 
 import requests
 
@@ -38,7 +37,7 @@ class UserRepositoryImplForRestAPI(UserRepository):
         self.logger.debug("response_json: %s", data)
         return User.from_json(data)
 
-    def create_one(self, user_name: str) -> User:
+    def create_one(self, user: User) -> User:
         """ユーザを登録します。"""
         user_api_url = f"{self.users_api_base_url}/users-api/v1/users"
         self.logger.debug("user_api_url: %s", user_api_url)
@@ -46,7 +45,8 @@ class UserRepositoryImplForRestAPI(UserRepository):
         try:
             response = requests.post(
                 user_api_url,
-                json={"user_name": user_name},
+                # TODO: データクラスからディクショナリ変換する
+                json={"user_name": user.name},
             )
             response.raise_for_status()
             data = response.text
@@ -86,7 +86,7 @@ class TodoRepositoryImplForRestAPI(TodoRepository):
         self.logger.debug("response_json: %s", data)
         return Todo.from_json(data)
 
-    def create_one(self, todo_title: str) -> Todo:
+    def create_one(self, todo: Todo) -> Todo:
         """Todoを登録します。"""
         todo_api_url = f"{self.todo_api_base_url}/todo-api/v1/todo"
         self.logger.debug("todo_api_url: %s", todo_api_url)
@@ -94,7 +94,8 @@ class TodoRepositoryImplForRestAPI(TodoRepository):
         try:
             response = requests.post(
                 todo_api_url,
-                json={"todo_title": todo_title},
+                # TODO: データクラスからディクショナリ変換する
+                json={"todo_title": todo.title},
             )
             response.raise_for_status()
             data = response.text

@@ -1,5 +1,7 @@
 """サービスクラスを定義するモジュールです。"""
 
+import uuid
+
 from common.domain.model import Todo
 from common.domain.repository import TodoRepository
 
@@ -16,4 +18,6 @@ class TodoService:
 
     def register_todo(self, todo_title: str) -> Todo:
         """Todoを登録します。"""
-        return self.todo_repository.create_one(todo_title)
+        return self.todo_repository.create_one(
+            Todo(id=str(uuid.uuid4()), title=todo_title)
+        )

@@ -6,7 +6,11 @@ from aws_lambda_powertools.logging import Logger, correlation_paths
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from common.domain.model import User
-from common.infra.repository_stub import UserRepositoryStub
+
+# from common.infra.repository_stub import UserRepositoryStub as UserRepositoryImpl
+from common.infra.repository_dynamodb import (
+    UserRepositoryImplForDynamoDB as UserRepositoryImpl,
+)
 from domain.service import UserService
 
 from appbase.component import application_context
@@ -15,7 +19,7 @@ try:
     app: APIGatewayRestResolver = application_context.get_api_gateway_rest_resolver()
     logger: Logger = application_context.get_logger()
     tracer: Tracer = application_context.get_tracer()
-    user_repository = UserRepositoryStub()
+    user_repository = UserRepositoryImpl(logger=logger)
     service = UserService(user_repository=user_repository)
 except Exception as e:
     # TODO: 初期化時の正しい例外処理の検討

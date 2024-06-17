@@ -461,6 +461,7 @@ docker compose up -d
     * ブラウザで[http://localhost:8001/](http://localhost:8001/)にアクセスし「Create Table」ボタンをクリック    
     * 以下のテーブルを作成
         * 「Table Name」…「todo」、「Hash Attribute Name」…「todo_id」、「Hash Attribute Type」…「String」で作成
+        * 「Table Name」…「users」、「Hash Attribute Name」…「user_id」、「Hash Attribute Type」…「String」で作成
         * 「Table Name」…「temp」、「Hash Attribute Name」…「id」、「Hash Attribute Type」…「String」で作成
         * 「Table Name」…「queue_message」、「Hash Attribute Name」…「message_id」、「Hash Attribute Type」…「String」で作成        
 

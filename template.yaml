@@ -102,9 +102,11 @@ Globals:
         POWERTOOLS_LOG_LEVEL: !Ref LogLevel
         #POWERTOOLS_DEV: true
         #POWERTOOLS_LOGGER_LOG_EVENT: true
+        #TODO: Add Environment Variables         
+        DYNAMODB_LOCAL_ENDPOINT:        
+        TODO_TABLE_NAME: todo
+        USERS_TABLE_NAME: users
 
-        #TODO: Add Environment Variables 
-        HOGE: Hoge
     # Deployment Configurtion
     AutoPublishAlias: live
     DeploymentPreference:
@@ -150,7 +152,7 @@ Resources:
         Variables:
           POWERTOOLS_SERVICE_NAME: !Ref BffFunctionName
           TODO_API_BASE_URL: !Sub https://${TodoApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}
-          USERS_API_BASE_URL: !Sub https://${UserApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}
+          USERS_API_BASE_URL: !Sub https://${UserApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}          
 # Hello World Function
   HelloWorldFunction:
     Type: AWS::Serverless::Function 
@@ -184,6 +186,9 @@ Resources:
             Path: /users-api/{proxy+}
             Method: ANY
             RestApiId: !Ref UserApi
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: !Ref UsersFunctionName
 
 # Todo Function(API Triggered)
   TodoFunction:

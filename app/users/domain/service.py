@@ -1,5 +1,7 @@
 """サービスクラスを定義するモジュールです。"""
 
+import uuid
+
 from common.domain.model import User
 from common.domain.repository import UserRepository
 
@@ -16,4 +18,6 @@ class UserService:
 
     def register_user(self, user_name: str) -> User:
         """ユーザを登録します。"""
-        return self.user_repository.create_one(user_name)
+        return self.user_repository.create_one(
+            User(id=str(uuid.uuid4()), name=user_name)
+        )

@@ -21,8 +21,8 @@ class BffService:
 
     def register_user(self, user_name: str) -> User:
         """ユーザを登録します。"""
-        return self.user_repository.create_one(user_name)
+        return self.user_repository.create_one(User(name=user_name))
 
     def register_todo(self, todo_title: str) -> Todo:
         """Todoを登録します。"""
-        return self.todo_repository.create_one(todo_title)
+        return self.todo_repository.create_one(Todo(title=todo_title))

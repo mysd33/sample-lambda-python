@@ -4,7 +4,11 @@ from aws_lambda_powertools.event_handler.api_gateway import APIGatewayRestResolv
 from aws_lambda_powertools.logging import Logger, correlation_paths
 from aws_lambda_powertools.tracing import Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from common.infra.repository_stub import TodoRepositoryStub
+
+# from common.infra.repository_stub import TodoRepositoryImpl
+from common.infra.repository_dynamodb import (
+    TodoRepositoryImplForDynamoDB as TodoRepositoryImpl,
+)
 from domain.service import TodoService
 
 from appbase.component import application_context
@@ -13,7 +17,7 @@ try:
     app: APIGatewayRestResolver = application_context.get_api_gateway_rest_resolver()
     logger: Logger = application_context.get_logger()
     tracer: Tracer = application_context.get_tracer()
-    todo_repository = TodoRepositoryStub()
+    todo_repository = TodoRepositoryImpl(logger=logger)
     service = TodoService(todo_repository=todo_repository)
 
 except Exception as e:

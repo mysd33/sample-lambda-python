@@ -103,7 +103,7 @@ Globals:
         #POWERTOOLS_DEV: true
         #POWERTOOLS_LOGGER_LOG_EVENT: true
         #TODO: Add Environment Variables         
-        DYNAMODB_LOCAL_ENDPOINT:        
+        DYNAMODB_LOCAL_ENDPOINT: ""
         TODO_TABLE_NAME: todo
         USERS_TABLE_NAME: users
 

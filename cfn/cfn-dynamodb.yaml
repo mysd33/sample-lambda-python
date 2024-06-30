@@ -3,9 +3,9 @@ Description: DynamoDB Template for CloudFormation Demo.
 #Metadata: 
 
 Parameters: 
-#  UsersTableName:
-#    Type: String
-#    Default: users    
+  UsersTableName:
+    Type: String
+    Default: users    
   TodoTableName:
     Type: String
     Default: todo
@@ -21,19 +21,17 @@ Parameters:
 #Conditions: 
 
 Resources: 
-# DynamoDB
-# User table on DynamoDB is not used now
-#  UsersTable:
-#    Type: AWS::DynamoDB::Table
-#    Properties:
-#      TableName: !Ref UsersTableName
-#      KeySchema:
-#        - AttributeName: user_id
-#          KeyType:  HASH
-#      AttributeDefinitions:
-#        - AttributeName: user_id
-#          AttributeType: S
-#      BillingMode: PAY_PER_REQUEST   
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref UsersTableName
+      KeySchema:
+        - AttributeName: user_id
+          KeyType:  HASH
+      AttributeDefinitions:
+        - AttributeName: user_id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST   
   TodoTable:
     Type: AWS::DynamoDB::Table
     Properties:

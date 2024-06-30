@@ -21,8 +21,12 @@ class BffService:
 
     def register_user(self, user_name: str) -> User:
         """ユーザを登録します。"""
-        return self.user_repository.create_one(User(name=user_name))
+        # TODO: dataclassの定義上、引数にidを設定するのが必須なのでdummyを入れて暫定対処
+        # Optional型にするか、専用のUserクラスを作成するなどの対応が必要
+        return self.user_repository.create_one(User(id="dummy", name=user_name))
 
     def register_todo(self, todo_title: str) -> Todo:
         """Todoを登録します。"""
-        return self.todo_repository.create_one(Todo(title=todo_title))
+        # TODO: dataclassの定義上、引数にidを設定するのが必須なのでdummyを入れて暫定対処
+        # Optional型にするか、専用のUserクラスを作成するなどの対応が必要
+        return self.todo_repository.create_one(Todo(id="dummy", title=todo_title))

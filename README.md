@@ -38,6 +38,17 @@
 * X-Rayによる可視化
     * API Gateway、Lambdaにおいて、X-Rayによる可視化にも対応している
     * RDB（RDS Aurora）、DynamoDBへのアクセス、REST API、SQSの呼び出しのトレースにも対応予定
+    * RDB(Aurora)アクセスの可視化の例
+        * TODO: イメージ貼り付け
+    * DynamoDBアクセスの可視化の例
+        * Userテーブルアクセスの例
+        ![X-Rayの可視化の例1](image/xray-dynamodb_users.png)
+        * TODOテーブルアクセスの例
+        ![X-Rayの可視化の例2](image/xray-dynamodb_todo.png)
+    * REST APIの呼び出しの可視化の例        
+        ![X-Rayの可視化の例3](image/xray-bff.png)
+    * SQS、S3等の呼び出しの可視化の例
+        * TODO: イメージ貼り付け
 
 ## 事前準備
 * ローカル環境に、Python、AWS CLI、AWS SAM CLI、Docker環境が必要
@@ -135,8 +146,8 @@ psql -h (RDS Proxyのエンドポイント) -U postgres -d testdb
 ```
 
 ## 9. DynamoDBのテーブル作成
-* TODO: まだAP側が使ってないため不要
-* DynamoDBに「todo」、「temp」、「queue_message」の各テーブルを作成する。
+* DynamoDBに「users」、「todo」、「temp」、「queue_message」の各テーブルを作成する。
+    * TODO: RDB対応後は、「users」テーブルの作成処理を削除する予定
 ```sh
 aws cloudformation validate-template --template-body file://cfn-dynamodb.yaml
 aws cloudformation create-stack --stack-name Demo-DynamoDB-Stack --template-body file://cfn-dynamodb.yaml
@@ -165,47 +176,38 @@ aws cloudformation create-stack --stack-name Demo-AppConfig-Stack --template-bod
 ```
 
 ## 13. AWS SAMでLambda/API Gatewayのデプロイ   
-* ソフトウェアフレームワークのビルド
-    * 通常のプロジェクトと違い、簡単のため、ソフトウェアフレームワークを同じリポジトリ内の別ディレクトリに配置しているため、requirements.txtに記載するパッケージの探索パスが通るようにするため、パッケージをインストールする。
-    * また、相対パスでrequirements.txtに記載できるよう、whlファイル（配布物アーカイブ）を作成する。
+* アプリケーションのSAMビルド    
 
 ```sh
-# トップのフォルダに戻る
-cd ..
-
-# パッケージをインストールすることで、VS Codeで開発するとき探索パスが通るようにする
-pip install .\appbase
-# 相対パスでrequirements.txtに記載できるよう、whlファイル（配布物アーカイブ）を作成
-cd appbase & py -m pip install --upgrade build & py -m build
-```
-
-* SAMビルド    
-```sh
-# ビルド
-cd .. & sam build
-
-# Windowsでもmakeをインストールすればmakeだけでいけます
-# makeの場合は、ソフトウェアフレームワークのビルドも含んでいるので、通常はmakeコマンドのみでビルドできる
-make
-```
-
-* （参考）修正後再度ビルドするとき
-```sh
-# .aws-sam配下のビルド資材を削除
+# 既存の.aws-sam配下のビルド資材を削除する場合は、以下を実行
 rmdir /s /q .aws-sam
 
 # ソフトウェアフレームワークのビルド
 pip install .\appbase
 cd appbase & py -m pip install --upgrade build & py -m build
+	
+# 業務共通プロジェクトのビルド
+pip install .\app\common
+cd appbase & py -m pip install --upgrade build & py -m build
 
-# ビルド
+# 業務APのビルド
 cd .. & sam build
 
 # Windowsでもmakeをインストールすればmakeだけでいけます
 # makeの場合は、ソフトウェアフレームワークのビルドも含んでいるので、通常はmakeコマンドのみでビルドできる
 make
 ```
+```sh
+# トップのフォルダに戻る
+cd ..
 
+# ビルド
+sam build
+
+# Windowsでもmakeをインストールすればmakeだけでいけます
+# makeの場合は、ソフトウェアフレームワークのビルドも含んでいるので、通常はmakeコマンドのみでビルドできる
+make
+```
 
 * SAMデプロイ
 ```sh
@@ -218,6 +220,34 @@ make deploy_guided
 sam deploy
 # Windowsでもmakeをインストールすればmakeでいけます
 make deploy
+```
+
+* （参考）ソフトウェアフレームワークのみのビルド
+    * 通常のプロジェクトと違い、簡単のため、ソフトウェアフレームワークを同じリポジトリ内の別ディレクトリに配置しているため、requirements.txtに記載するパッケージの探索パスが通るようにするため、パッケージをインストールする。
+    * また、相対パスでrequirements.txtに記載できるよう、whlファイル（配布物アーカイブ）を作成する。
+
+```sh
+# パッケージをインストールすることで、VS Codeで開発するとき探索パスが通るようにする
+pip install .\appbase
+# 相対パスでrequirements.txtに記載できるよう、whlファイル（配布物アーカイブ）を作成
+cd appbase & py -m pip install --upgrade build & py -m build
+
+# Windowsでもmakeをインストールすればmakeでいけます
+make build_appbase
+```
+
+* （参考）業務共通プロジェクトのみのビルド
+    * 通常のプロジェクトと違い、簡単のため、複数AP横断で利用する業務共通のプロジェクトを同じリポジトリ内の別ディレクトリに配置しているため、requirements.txtに記載するパッケージの探索パスが通るようにするため、パッケージをインストールする。
+    * また、相対パスでrequirements.txtに記載できるよう、whlファイル（配布物アーカイブ）を作成する。
+
+```sh
+# パッケージをインストールすることで、VS Codeで開発するとき探索パスが通るようにする
+pip install .\app\common
+# 相対パスでrequirements.txtに記載できるよう、whlファイル（配布物アーカイブ）を作成
+cd app\common & py -m pip install --upgrade build & py -m build
+
+# Windowsでもmakeをインストールすればmakeでいけます
+make build_common
 ```
 
 ## 14. AppConfigのデプロイ
@@ -243,8 +273,6 @@ aws cloudformation create-stack --stack-name Demo-AppConfigSMDeploy-Stack --temp
 ```
 
 ## 15. APの実行確認（バックエンド）
-* まだ、AP未実装
-
 * マネージドコンソールから、EC2(Bation)へSystems Manager Session Managerで接続して、curlコマンドで動作確認
     * 以下の実行例のURLを、sam deployの結果出力される実際のURLをに置き換えること
 
@@ -253,7 +281,7 @@ aws cloudformation create-stack --stack-name Demo-AppConfigSMDeploy-Stack --temp
 curl https://5h5zxybd3c.execute-api.ap-northeast-1.amazonaws.com/Prod/hello
 
 # 接続元Public IPアドレス（この例では、NAT Gatewayのもの）を返却
-Hello, 18.180.139.158
+{"message": "hello world", "location": "52.193.203.118"}
 ```
 
 * Userサービスでユーザ情報を登録するPOSTのAPI実行例
@@ -275,6 +303,8 @@ curl https://42b4c7bk9g.execute-api.ap-northeast-1.amazonaws.com/Prod/users-api/
 
 * Todoサービスでやることリストを登録するPOSTのAPI実行例
     * TodoサービスはDynamoDBアクセスするLambda/goのサンプルAP
+
+    * TODO:トランザクションあり版は、現状未実装
 ```sh
 # DynamoDBトランザクションなし
 curl -X POST -H "Content-Type: application/json" -d '{ "todo_title" : "ミルクを買う"}' https://civuzxdd14.execute-api.ap-northeast-1.amazonaws.com/Prod/todo-api/v1/todo
@@ -294,7 +324,6 @@ curl https://civuzxdd14.execute-api.ap-northeast-1.amazonaws.com/Prod/todo-api/v
 ```
 
 ## 16. APの実行確認（フロントエンド）
-* まだ、AP未実装
 * 手元の端末のコンソールから、curlコマンドで動作確認
     * 以下の実行例のURLを、sam deployの結果出力される実際のURLをに置き換えること
 * Windowsではgit bash等で実行できるが日本語が文字化けするので、PostmanやTalend API Tester等のツールを使ったほうがよい
@@ -325,6 +354,8 @@ curl https://adoscoxed14.execute-api.ap-northeast-1.amazonaws.com/Prod/bff-api/v
 
 * ディレード処理の実行例
     * 実行結果はDynamoDBを確認するとよい
+    * TODO: ディレード処理は、現在未実装
+
 ```sh
 # BFFからの非同期実行依頼（標準キュー）
 # 業務のDB更新を伴う場合

@@ -20,6 +20,7 @@
 
 * LambdaからAWS SDKを用いたDynamoDB、SQS、S3等の各種AWSリソースへのアクセスに対応
 
+* ソフトウェアフレームワーク機能、業務共通機能含めて、全AP共通のパッケージは、Lambdaレイヤ(CommonLayer)で提供
 
 ![構成イメージ](image/demo.png)
 

@@ -65,15 +65,15 @@ Mappings:
 #    ap-northeast-3:
 #      x86: arn:aws:lambda:ap-northeast-3:706869817123:layer:AWS-AppConfig-Extension:101           
 #      arm: arn:aws:lambda:ap-northeast-3:706869817123:layer:AWS-AppConfig-Extension-Arm64:16
-#  LambdaInsightsExtensionsLayerMap:
-#    #Tokyo
-#    ap-northeast-1:
-#      x86: arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:72    
-#      arm: arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:23
-#    #Osaka
-#    ap-northeast-3:
-#      x86: arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:26
-#      arm: arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension-Arm64:9   
+  LambdaInsightsExtensionsLayerMap:
+    #Tokyo
+    ap-northeast-1:
+      x86: arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:72    
+      arm: arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:23
+    #Osaka
+    ap-northeast-3:
+      x86: arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:26
+      arm: arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension-Arm64:9   
 
 Conditions:
   TracingEnabled: !Equals
@@ -122,7 +122,7 @@ Globals:
     # AppConfig Extensions Lambda Layer    
     #  - !FindInMap [AppConfigExtentionsLayerMap, !Ref AWS::Region , x86]
     # Lambda Insights Extensions Lambda Layer    
-    #  - !FindInMap [LambdaInsightsExtensionsLayerMap, !Ref AWS::Region , x86]    
+    - !FindInMap [LambdaInsightsExtensionsLayerMap, !Ref AWS::Region , x86]    
   Api:
     OpenApiVersion: 3.0.3
     TracingEnabled: !If [TracingEnabled, true, false]

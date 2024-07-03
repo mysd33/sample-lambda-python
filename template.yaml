@@ -44,6 +44,7 @@ Parameters:
   LogRetensionInDays:
     Type: Number
     Default: 7
+  
 
 Mappings:
   PowertoolsLayerMap:
@@ -116,6 +117,8 @@ Globals:
     Layers:
     # Powertools Lambda Layer
     - !FindInMap [PowertoolsLayerMap, !Ref AWS::Region , x86]
+    # Application Common Lambda Layer
+    - !Ref CommonLayer
     # AppConfig Extensions Lambda Layer    
     #  - !FindInMap [AppConfigExtentionsLayerMap, !Ref AWS::Region , x86]
     # Lambda Insights Extensions Lambda Layer    
@@ -132,6 +135,19 @@ Globals:
       Format: '{ "requestId":"$context.requestId", "extendedRequestId":"$context.extendedRequestId", "ip": "$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "contextPath":"$context.path", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength", "integrationLatency":"$context.integration.latency", "responseLatency":"$context.responseLatency" }'      
       DestinationArn: !GetAtt ApiGwAccessLogGroup.Arn    
 Resources:
+# Lambda Layer
+  CommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub ${StackPrefix}-CommonLayer
+      ContentUri: commonlayer
+      CompatibleArchitectures:
+        - x86_64
+#        - arm64
+      CompatibleRuntimes:
+        - python3.12
+    Metadata:
+      BuildMethod: python3.12
 # Bff Function
   BffFunction:
     Type: AWS::Serverless::Function

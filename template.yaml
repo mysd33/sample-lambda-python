@@ -44,7 +44,16 @@ Parameters:
   LogRetensionInDays:
     Type: Number
     Default: 7
-
+  PowertoolsLayerArn:
+    Type: String
+    Default: arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2:75
+  AppConfigLayerArn:
+    Type: String
+    Default: arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension:98
+  LambdaInsightsLayerArn:
+    Type: String
+    Default: arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:80
+             
 Conditions:
   TracingEnabled: !Equals
     - !Ref TracingValue
@@ -85,13 +94,13 @@ Globals:
       Type: AllAtOnce    
     Layers:
     # Powertools Lambda Layer
-    - arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2:75
+    - !Ref PowertoolsLayerArn
     # Application Common Lambda Layer
     - !Ref CommonLayer
     # AppConfig Extensions Lambda Layer    
-    - arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension:98 
+    #- !Ref AppConfigLayerArn
     # Lambda Insights Extensions Lambda Layer    
-    - arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:80
+    - !Ref LambdaInsightsLayerArn
 
   Api:
     OpenApiVersion: 3.0.3

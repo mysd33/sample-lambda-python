@@ -20,7 +20,7 @@ resolve_s3 = true
 s3_prefix = "todo-python-app"
 region = "ap-northeast-1"
 image_repositories = []
-parameter_overrides = "StackPrefix=\"Demo\" TracingValue=\"Active\" Stage=\"Prod\" MemorySize=\"128\" HelloWorldFunctionName=\"hello-world\" BffFunctionName=\"bff-function\" UsersFunctionName=\"user-function\" TodoFunctionName=\"todo-function\" LogLevel=\"DEBUG\" LogRetensionInDays=\"7\""
+parameter_overrides = "StackPrefix=\"Demo\" TracingValue=\"Active\" Stage=\"Prod\" MemorySize=\"128\" HelloWorldFunctionName=\"hello-world\" BffFunctionName=\"bff-function\" UsersFunctionName=\"user-function\" TodoFunctionName=\"todo-function\" LogLevel=\"DEBUG\" LogRetensionInDays=\"7\" PowertoolsLayerArn=\"arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2:75\" AppConfigLayerArn=\"arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension:98\" LambdaInsightsLayerArn=\"arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:80\""
 
 [default.package.parameters]
 resolve_s3 = true

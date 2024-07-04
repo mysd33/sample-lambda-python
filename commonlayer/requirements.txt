@@ -1,6 +1,4 @@
 requests
-aws-lambda-powertools
-aws_xray_sdk
 dataclasses-json
 boto3
 

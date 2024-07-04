@@ -54,6 +54,13 @@
 ## 事前準備
 * ローカル環境に、Python、AWS CLI、AWS SAM CLI、Docker環境が必要
 
+* ローカル環境での開発時にVSCode等でのソースコード補完等をサポートするため、Lambda Powertoolsをpipでインストールする
+    * Lambda Layerを使う場合は、"aws-lambda-powertools[all]"を指定するとよい
+
+```sh
+pip install "aws-lambda-powertools[all]
+```
+
 ## 1. IAMの作成
 ```sh
 #cfnフォルダに移動
